@@ -1,10 +1,11 @@
 import styles from './Footer.module.css';
+import instagramIcon from '../../../assets/Icons/instagram.png';
+import tiktokIcon from '../../../assets/Icons/tik-tok.png';
 
 const Footer = () => {
   return (
     <footer className={styles.footer} role="contentinfo">
       <div className={styles.container}>
-        {/* Contact Info */}
         <div className={styles.section}>
           <h3 className={styles.title}>Contact Us</h3>
           <address className={styles.address}>
@@ -21,14 +22,12 @@ const Footer = () => {
           </address>
         </div>
 
-        {/* Tagline */}
         <div className={styles.section}>
           <p className={styles.tagline}>
             © 2025 The Shire Of Paws. Every paw matters.
           </p>
         </div>
 
-        {/* Social Media & Admin */}
         <div className={styles.section}>
           <div className={styles.socialLinks}>
             <a 
@@ -38,7 +37,7 @@ const Footer = () => {
               className={styles.socialLink}
               aria-label="Follow us on Instagram"
             >
-              <img src="/src/assets/Icons/instagram.svg" alt="" />
+              <img src={instagramIcon} alt="Instagram" />
             </a>
             <a 
               href="https://tiktok.com" 
@@ -47,7 +46,7 @@ const Footer = () => {
               className={styles.socialLink}
               aria-label="Follow us on TikTok"
             >
-              <img src="/src/assets/Icons/tik-tok.svg" alt="" />
+              <img src={tiktokIcon} alt="TikTok" />
             </a>
           </div>
           <button 
