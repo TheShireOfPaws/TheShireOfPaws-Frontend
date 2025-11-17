@@ -1,0 +1,22 @@
+:root {
+  /* Colors */
+  --color-cream: #FAF6F2;
+  --color-gold: #B8860B;
+  --color-green: #114C2A;
+  --color-brown: #382903;
+  --color-white: #FFFFFF;
+  
+  /* Typography - Fredoka */
+  --font-family: 'Fredoka', sans-serif;
+  --font-size-h1: 64px;
+  --font-size-h2: 36px;
+  --font-size-body: 32px;
+  --font-size-small: 24px;
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    --font-size-h1: 48px;
+    --font-size-h2: 32px;
+    --font-size-body: 24px;
+  }
+}
