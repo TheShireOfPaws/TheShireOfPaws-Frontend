@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Button from '../../components/common/Button/Button';
+import AdoptionForm from '../../components/adoption/AdoptionForm/AdoptionForm';  
 import styles from './DogDetailPage.module.css';
 
 const DogDetailPage = () => {
@@ -33,10 +34,17 @@ const DogDetailPage = () => {
     }, 100);
   };
 
+
+  const handleFormSuccess = () => {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 2000);
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-        {/* Botón Volver */}
+
         <button
           onClick={() => navigate('/dogs')}
           className={styles.backButton}
@@ -44,10 +52,10 @@ const DogDetailPage = () => {
           ← Back to Dogs
         </button>
 
-        {/* Contenido */}
+
         <div className={styles.content}>
 
-          {/* Imagen */}
+
           <div className={styles.imageSection}>
             <img
               src={mockDog.photoUrl}
@@ -60,14 +68,14 @@ const DogDetailPage = () => {
             )}
           </div>
 
-          {/* About + Story */}
+
           <div className={styles.storyBox}>
             <h2 className={styles.storyTitle}>About {mockDog.name}</h2>
             <p className={styles.storyText}>{mockDog.story}</p>
           </div>
         </div>
 
-        {/* Nombre + Detalles abajo */}
+
         <div className={styles.infoSection}>
           <div className={styles.details}>
             <div className={styles.detailItem}>
@@ -98,7 +106,7 @@ const DogDetailPage = () => {
           </Button>
         </div>
 
-        {/* Formulario */}
+
         {showAdoptionForm && (
           <div id="adoption-form" className={styles.formSection}>
             <h2 className={styles.formTitle}>
@@ -106,12 +114,15 @@ const DogDetailPage = () => {
             </h2>
 
             <p className={styles.formSubtitle}>
-              Please fill out this form to start the adoption process.
+              Please fill out this form to start the adoption process. We will review your application and get back to you soon!
             </p>
 
-            <div className={styles.formPlaceholder}>
-              <p>Adoption form will go here</p>
-            </div>
+
+            <AdoptionForm 
+              dogId={mockDog.id}
+              dogName={mockDog.name}
+              onSuccess={handleFormSuccess}
+            />
           </div>
         )}
       </div>
