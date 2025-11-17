@@ -1,0 +1,259 @@
+/* ================================================
+   DOG DETAIL PAGE - The Shire Of Paws
+   ================================================ */
+
+.page {
+  background-color: var(--color-cream);
+  min-height: 100vh;
+  padding: var(--spacing-xl) 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+/* ==================== BACK BUTTON ==================== */
+
+.backButton {
+  background: none;
+  border: 2px solid var(--color-green);
+  color: var(--color-green);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-bottom: var(--spacing-xl);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.backButton:hover {
+  background-color: var(--color-green);
+  color: var(--color-white);
+  transform: translateX(-5px);
+}
+
+/* ==================== MAIN CONTENT ==================== */
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;  
+  gap: var(--spacing-xxl);
+}
+
+
+/* ==================== IMAGE SECTION ==================== */
+
+.imageSection {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  background-color: var(--color-white);
+}
+
+.image {
+  width: 100%;
+  height: auto;    
+  object-fit: cover;
+  display: block;
+}
+
+.badge {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  background-color: var(--color-success);
+  color: var(--color-white);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-full);
+  font-size: 18px;
+  font-weight: var(--font-weight-semibold);
+  box-shadow: var(--shadow-md);
+}
+
+.badge.inProcess {
+  background-color: var(--color-warning);
+  color: var(--color-brown);
+}
+
+.badge.adopted {
+  background-color: var(--color-gray);
+}
+
+/* ==================== INFO SECTION ==================== */
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.name {
+  font-size: 56px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-green);
+  margin: 0;
+  line-height: 1.1;
+}
+
+/* ==================== DETAILS ==================== */
+
+.details {
+  display: flex;
+  gap: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background-color: var(--color-white);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  flex: 1;
+  min-width: 150px;
+}
+
+.detailIcon {
+  font-size: 40px;
+}
+
+.detailLabel {
+  display: block;
+  font-size: 16px;
+  color: var(--color-gray-dark);
+  font-weight: var(--font-weight-medium);
+}
+
+.detailValue {
+  display: block;
+  font-size: 24px;
+  color: var(--color-brown);
+  font-weight: var(--font-weight-semibold);
+  text-transform: capitalize;
+}
+
+/* ==================== STORY ==================== */
+
+.story {
+  background-color: var(--color-white);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.storyTitle {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-green);
+  margin-bottom: var(--spacing-md);
+}
+
+.storyText {
+  font-size: 20px;
+  line-height: var(--line-height-relaxed);
+  color: var(--color-brown);
+  text-align: justify;
+}
+
+/* ==================== ADOPTED MESSAGE ==================== */
+
+.adoptedMessage {
+  background-color: var(--color-white);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
+
+.adoptedMessage p {
+  font-size: 28px;
+  color: var(--color-green);
+  margin-bottom: var(--spacing-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ==================== FORM SECTION ==================== */
+
+.formSection {
+  background-color: var(--color-white);
+  padding: var(--spacing-xxl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  scroll-margin-top: var(--spacing-xl);
+}
+
+.formTitle {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-green);
+  margin-bottom: var(--spacing-sm);
+  text-align: center;
+}
+
+.formSubtitle {
+  font-size: 20px;
+  color: var(--color-gray-dark);
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.formPlaceholder {
+  background-color: var(--color-cream);
+  padding: var(--spacing-xxl);
+  border-radius: var(--radius-md);
+  text-align: center;
+  font-size: 24px;
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media (max-width: 1024px) {
+  .content {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+  }
+
+  .image {
+    height: 400px;
+  }
+
+  .name {
+    font-size: 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: var(--spacing-lg) 0;
+  }
+
+  .name {
+    font-size: 36px;
+  }
+
+  .details {
+    flex-direction: column;
+  }
+
+  .detailItem {
+    min-width: 100%;
+  }
+
+  .storyText {
+    font-size: 18px;
+  }
+
+  .formSection {
+    padding: var(--spacing-lg);
+  }
+}
