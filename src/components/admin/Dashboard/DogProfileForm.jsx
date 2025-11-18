@@ -4,6 +4,25 @@ import dogService from '../../../services/dogService';
 import fileService from '../../../services/fileService';
 import styles from './DogProfileForm.module.css';
 
+const GENDER_OPTIONS = [
+  { value: 'MALE', label: 'Male' },
+  { value: 'FEMALE', label: 'Female' },
+  { value: 'UNKNOWN', label: 'Unknown' },
+];
+
+const SIZE_OPTIONS = [
+  { value: 'SMALL', label: 'Small' },
+  { value: 'MEDIUM', label: 'Medium' },
+  { value: 'LARGE', label: 'Large' },
+  { value: 'EXTRA_LARGE', label: 'Extra Large' },
+];
+
+const STATUS_OPTIONS = [
+  { value: 'AVAILABLE', label: 'Available' },
+  { value: 'IN_PROCESS', label: 'In Process' },
+  { value: 'ADOPTED', label: 'Adopted' },
+];
+
 const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
   const isEditMode = !!dog;
 
@@ -35,7 +54,6 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
         photoUrl: dog.photoUrl || '',
         status: dog.status || 'AVAILABLE'
       });
-      
 
       if (dog.photoUrl) {
         setPreviewUrl(fileService.getFileUrl(dog.photoUrl));
@@ -49,7 +67,6 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
       ...prev,
       [name]: value
     }));
-    
 
     if (errors[name]) {
       setErrors(prev => ({
@@ -61,7 +78,7 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    
+
     if (file) {
       if (!file.type.startsWith('image/')) {
         setErrors(prev => ({
@@ -71,7 +88,8 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
         return;
       }
 
-      if (file.size > 10 * 1024 * 1024) {
+      const MAX_SIZE = 10 * 1024 * 1024; 
+      if (file.size > MAX_SIZE) {
         setErrors(prev => ({
           ...prev,
           photo: 'Image size must be less than 10MB'
@@ -80,13 +98,13 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
       }
 
       setSelectedFile(file);
-      
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewUrl(reader.result);
       };
       reader.readAsDataURL(file);
-      
+
       setErrors(prev => ({
         ...prev,
         photo: ''
@@ -109,7 +127,7 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
 
     if (!formData.age) {
       newErrors.age = 'Age is required';
-    } else if (formData.age < 0 || formData.age > 30) {
+    } else if (parseInt(formData.age) < 0 || parseInt(formData.age) > 30) {
       newErrors.age = 'Age must be between 0 and 30';
     }
 
@@ -143,9 +161,8 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
 
       if (selectedFile) {
         setUploadingImage(true);
-        const uploadResponse = await fileService.uploadFile(selectedFile);
+        const uploadResponse = await fileService.uploadFile(selectedFile); 
         photoUrl = uploadResponse.fileName;
-        setUploadingImage(false);
       }
 
       const dogData = {
@@ -173,15 +190,37 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
         submit: error.response?.data?.message || 'Failed to save dog profile. Please try again.' 
       });
     } finally {
-      setIsSubmitting(false);
-      setUploadingImage(false);
+      setIsSubmitting(false); 
+      setUploadingImage(false); 
     }
   };
 
+  const RadioOptions = ({ name, options, currentSelection }) => (
+    <div className={styles.radioGroup}>
+      {options.map((option) => (
+        <label key={option.value} className={styles.radioLabel}>
+          <input
+            type="radio"
+            name={name}
+            value={option.value}
+            checked={currentSelection === option.value}
+            onChange={handleChange}
+          />
+          <span>{option.label}</span>
+        </label>
+      ))}
+    </div>
+  );
+
+  const ErrorMessage = ({ error }) => 
+    error ? <span className={styles.errorMessage}>{error}</span> : null;
+
+
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
+    <form onSubmit={handleSubmit} className={styles.form} noValidate>
+      
       <div className={styles.row}>
-        <div className={styles.field}>
+        <div className={styles.field}> 
           <label htmlFor="name" className={styles.label}>
             Name <span className={styles.required}>*</span>
           </label>
@@ -194,9 +233,7 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
             className={`${styles.input} ${errors.name ? styles.inputError : ''}`}
             placeholder="e.g., Buddy"
           />
-          {errors.name && (
-            <span className={styles.errorMessage}>{errors.name}</span>
-          )}
+          <ErrorMessage error={errors.name} />
         </div>
 
         <div className={styles.field}>
@@ -214,9 +251,7 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
             min="0"
             max="30"
           />
-          {errors.age && (
-            <span className={styles.errorMessage}>{errors.age}</span>
-          )}
+          <ErrorMessage error={errors.age} />
         </div>
       </div>
 
@@ -235,140 +270,49 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
         />
       </div>
 
-      <div className={styles.row}>
-        <div className={styles.field}>
-          <label htmlFor="gender" className={styles.label}>
+      <div className={styles.row}> 
+        <fieldset className={styles.fieldset}> 
+          <legend className={styles.label}>
             Gender <span className={styles.required}>*</span>
-          </label>
-          <div className={styles.radioGroup}>
-            <label className={styles.radioLabel}>
-              <input
-                type="radio"
-                name="gender"
-                value="MALE"
-                checked={formData.gender === 'MALE'}
-                onChange={handleChange}
-              />
-              <span>Male</span>
-            </label>
-            <label className={styles.radioLabel}>
-              <input
-                type="radio"
-                name="gender"
-                value="FEMALE"
-                checked={formData.gender === 'FEMALE'}
-                onChange={handleChange}
-              />
-              <span>Female</span>
-            </label>
-            <label className={styles.radioLabel}>
-              <input
-                type="radio"
-                name="gender"
-                value="UNKNOWN"
-                checked={formData.gender === 'UNKNOWN'}
-                onChange={handleChange}
-              />
-              <span>Unknown</span>
-            </label>
-          </div>
-          {errors.gender && (
-            <span className={styles.errorMessage}>{errors.gender}</span>
-          )}
-        </div>
+          </legend>
+          
+          <RadioOptions 
+            name="gender" 
+            options={GENDER_OPTIONS} 
+            currentSelection={formData.gender}
+          />
+          
+          <ErrorMessage error={errors.gender} />
+        </fieldset>
 
-        <div className={styles.field}>
-          <label htmlFor="size" className={styles.label}>
+        <fieldset className={styles.fieldset}>
+          <legend className={styles.label}>
             Size <span className={styles.required}>*</span>
-          </label>
-          <div className={styles.radioGroup}>
-            <label className={styles.radioLabel}>
-              <input
-                type="radio"
-                name="size"
-                value="SMALL"
-                checked={formData.size === 'SMALL'}
-                onChange={handleChange}
-              />
-              <span>Small</span>
-            </label>
-            <label className={styles.radioLabel}>
-              <input
-                type="radio"
-                name="size"
-                value="MEDIUM"
-                checked={formData.size === 'MEDIUM'}
-                onChange={handleChange}
-              />
-              <span>Medium</span>
-            </label>
-            <label className={styles.radioLabel}>
-              <input
-                type="radio"
-                name="size"
-                value="LARGE"
-                checked={formData.size === 'LARGE'}
-                onChange={handleChange}
-              />
-              <span>Large</span>
-            </label>
-            <label className={styles.radioLabel}>
-              <input
-                type="radio"
-                name="size"
-                value="EXTRA_LARGE"
-                checked={formData.size === 'EXTRA_LARGE'}
-                onChange={handleChange}
-              />
-              <span>Extra Large</span>
-            </label>
-          </div>
-          {errors.size && (
-            <span className={styles.errorMessage}>{errors.size}</span>
-          )}
-        </div>
-      </div>
+          </legend>
+          
+          <RadioOptions 
+            name="size" 
+            options={SIZE_OPTIONS} 
+            currentSelection={formData.size}
+          />
 
-      <div className={styles.field}>
-        <label htmlFor="status" className={styles.label}>
-          Status <span className={styles.required}>*</span>
-        </label>
-        <div className={styles.radioGroup}>
-          <label className={styles.radioLabel}>
-            <input
-              type="radio"
-              name="status"
-              value="AVAILABLE"
-              checked={formData.status === 'AVAILABLE'}
-              onChange={handleChange}
-            />
-            <span>Available</span>
-          </label>
-          <label className={styles.radioLabel}>
-            <input
-              type="radio"
-              name="status"
-              value="IN_PROCESS"
-              checked={formData.status === 'IN_PROCESS'}
-              onChange={handleChange}
-            />
-            <span>In Process</span>
-          </label>
-          <label className={styles.radioLabel}>
-            <input
-              type="radio"
-              name="status"
-              value="ADOPTED"
-              checked={formData.status === 'ADOPTED'}
-              onChange={handleChange}
-            />
-            <span>Adopted</span>
-          </label>
-        </div>
-        {errors.status && (
-          <span className={styles.errorMessage}>{errors.status}</span>
-        )}
+          <ErrorMessage error={errors.size} />
+        </fieldset>
       </div>
+      
+      <fieldset className={styles.fieldset}>
+        <legend className={styles.label}>
+          Status <span className={styles.required}>*</span>
+        </legend>
+        
+        <RadioOptions 
+          name="status" 
+          options={STATUS_OPTIONS} 
+          currentSelection={formData.status}
+        />
+
+        <ErrorMessage error={errors.status} />
+      </fieldset>
 
       <div className={styles.field}>
         <label className={styles.label}>
@@ -389,14 +333,12 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
         </div>
 
         {previewUrl && (
-          <div className={styles.preview}>
+          <div className={styles.preview}> 
             <img src={previewUrl} alt="Preview" className={styles.previewImage} />
           </div>
         )}
 
-        {errors.photo && (
-          <span className={styles.errorMessage}>{errors.photo}</span>
-        )}
+        <ErrorMessage error={errors.photo} />
       </div>
 
       {errors.submit && (
@@ -404,6 +346,7 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
           {errors.submit}
         </div>
       )}
+      
       <div className={styles.buttons}>
         {onCancel && (
           <Button 
@@ -411,7 +354,7 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
             variant="secondary" 
             size="medium"
             onClick={onCancel}
-            disabled={isSubmitting}
+            disabled={isSubmitting || uploadingImage}
           >
             Cancel
           </Button>

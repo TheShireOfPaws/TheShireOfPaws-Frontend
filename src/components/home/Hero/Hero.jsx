@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import Button from '../../common/Button/Button';
 import styles from './Hero.module.css';
 
@@ -8,13 +9,13 @@ import dog4 from '../../../assets/Images/HEASDER-4.jpg';
 import dog5 from '../../../assets/Images/HEADER-5.jpg';
 
 const Hero = () => {
+  const navigate = useNavigate();
   const dogImages = [dog1, dog2, dog3, dog4, dog5];
 
   return (
     <section className={styles.hero}>
       <div className={styles.container}>
         <div className={styles.decorationBg}></div>
-
 
         <div className={styles.content}>
           <h1 className={styles.title}>
@@ -23,14 +24,13 @@ const Hero = () => {
           </h1>
           
           <Button 
-            to="/dogs" 
             variant="primary" 
             size="medium"
+            onClick={() => navigate('/dogs')}
           >
             ADOPT, DON'T SHOP
           </Button>
         </div>
-
 
         <div className={styles.photoGrid}>
           {dogImages.map((imgUrl, index) => (

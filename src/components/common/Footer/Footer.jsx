@@ -1,21 +1,26 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
 import LoginModal from '../../admin/LoginModal/LoginModal';  
 import styles from './Footer.module.css';
 import instagramIcon from '../../../assets/Icons/instagram.png';
 import tiktokIcon from '../../../assets/Icons/tik-tok.png';
 
 const Footer = () => {
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false); 
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const handleLoginSuccess = () => {
-    window.location.href = '/admin/dashboard';
+    navigate('/admin/dashboard');
   };
 
   return (
     <>
       <footer className={styles.footer} role="contentinfo">
         <div className={styles.container}>
-          {/* Contact Info */}
+          
+
           <div className={styles.section}>
             <h3 className={styles.title}>Contact Us</h3>
             <address className={styles.address}>
@@ -61,19 +66,30 @@ const Footer = () => {
                 <img src={tiktokIcon} alt="TikTok" />
               </a>
             </div>
-            
 
-            <button 
-              className={styles.adminLink}
-              onClick={() => setIsLoginModalOpen(true)}
-              aria-label="Admin login"
-            >
-              Admin
-            </button>
+            <div className={styles.adminButtons}>
+              {isAuthenticated ? (
+                <button 
+                  className={styles.adminLink}
+                  onClick={() => navigate('/admin/dashboard')}
+                  aria-label="Go to dashboard"
+                >
+                  Dashboard
+                </button>
+              ) : (
+                <button 
+                  className={styles.adminLink}
+                  onClick={() => setIsLoginModalOpen(true)}
+                  aria-label="Admin login"
+                >
+                  Admin
+                </button>
+              )}
+            </div>
           </div>
+          
         </div>
       </footer>
-
 
       <LoginModal 
         isOpen={isLoginModalOpen}

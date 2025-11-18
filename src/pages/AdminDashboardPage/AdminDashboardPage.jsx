@@ -8,43 +8,49 @@ import adoptionRequestService from '../../services/adoptionRequestService';
 import fileService from '../../services/fileService';
 import Button from '../../components/common/Button/Button';
 import DogProfileForm from '../../components/admin/Dashboard/DogProfileForm';
+import ConfirmModal from '../../components/common/ConfirmModal/ConfirmModal';
 import styles from './AdminDashboardPage.module.css';
 
 const AdminDashboardPage = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const [activeTab, setActiveTab] = useState('dogs');
-
-  const [showDogForm, setShowDogForm] = useState(false);
-  const [editingDog, setEditingDog] = useState(null);
   
 
+  const [activeTab, setActiveTab] = useState('dogs');
+  const [showDogForm, setShowDogForm] = useState(false);
+  const [editingDog, setEditingDog] = useState(null);
   const [viewingRequest, setViewingRequest] = useState(null);
+  
+
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    confirmText: 'Confirm',
+    variant: 'danger',
+    onConfirm: null
+  });
+  
 
   const { dogs, loading: dogsLoading, error: dogsError, refetch: refetchDogs } = useDogs();
   const { requests, loading: requestsLoading, error: requestsError, refetch: refetchRequests } = useAdoptionRequests();
   
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    
-    console.log('Dashboard - Checking auth...'); 
-    console.log('Token exists:', !!token); 
-    
-    if (!token) {
-      console.log('No token found, redirecting to home'); 
-      navigate('/');
-    } else {
-      console.log('Token found, user is authenticated'); 
-    }
+    if (!localStorage.getItem('token')) navigate('/');
   }, [navigate]);
+
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
-  
+  const closeConfirmModal = () => {
+    setConfirmModal({ ...confirmModal, isOpen: false });
+  };
+
+ 
   const handleAddDog = () => {
     setEditingDog(null);
     setShowDogForm(true);
@@ -55,14 +61,25 @@ const AdminDashboardPage = () => {
     setShowDogForm(true);
   };
 
-  const handleDeleteDog = async (dogId, dogName) => {
-    if (window.confirm(`Are you sure you want to delete ${dogName}? This action cannot be undone.`)) {
-      try {
-        await dogService.deleteDog(dogId);
-        refetchDogs();
-      } catch (error) {
-        alert('Failed to delete dog: ' + (error.response?.data?.message || error.message));
-      }
+  const handleDeleteDog = (dogId, dogName) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Dog Profile',
+      message: `Are you sure you want to delete ${dogName}? This action cannot be undone.`,
+      confirmText: 'Delete',
+      variant: 'danger',
+      onConfirm: () => confirmDeleteDog(dogId)
+    });
+  };
+
+  const confirmDeleteDog = async (dogId) => {
+    try {
+      await dogService.deleteDog(dogId);
+      refetchDogs();
+      closeConfirmModal();
+    } catch (error) {
+      alert('Failed to delete dog: ' + (error.response?.data?.message || error.message));
+      closeConfirmModal();
     }
   };
 
@@ -77,6 +94,7 @@ const AdminDashboardPage = () => {
     setEditingDog(null);
   };
 
+
   const handleViewRequest = async (requestId) => {
     try {
       const request = await adoptionRequestService.getRequestById(requestId);
@@ -86,51 +104,191 @@ const AdminDashboardPage = () => {
     }
   };
 
-  const handleApproveRequest = async (requestId) => {
-    if (window.confirm('Are you sure you want to approve this adoption request?')) {
-      try {
-        await adoptionRequestService.updateRequestStatus(requestId, 'APPROVED');
-        refetchRequests();
-        setViewingRequest(null);
-      } catch (error) {
-        alert('Failed to approve request: ' + (error.response?.data?.message || error.message));
-      }
-    }
+  const handleApproveRequest = (requestId) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Approve Adoption Request',
+      message: 'Are you sure you want to approve this adoption request?',
+      confirmText: 'Approve',
+      variant: 'info',
+      onConfirm: () => confirmUpdateStatus(requestId, 'APPROVED')
+    });
   };
 
-  const handleDenyRequest = async (requestId) => {
-    if (window.confirm('Are you sure you want to deny this adoption request?')) {
-      try {
-        await adoptionRequestService.updateRequestStatus(requestId, 'DENIED');
-        refetchRequests();
-        setViewingRequest(null);
-      } catch (error) {
-        alert('Failed to deny request: ' + (error.response?.data?.message || error.message));
+  const handleDenyRequest = (requestId) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Deny Adoption Request',
+      message: 'Are you sure you want to deny this adoption request?',
+      confirmText: 'Deny',
+      variant: 'danger',
+      onConfirm: () => confirmUpdateStatus(requestId, 'DENIED')
+    });
+  };
+
+  const handleResetRequest = (requestId) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Reset to In Process',
+      message: 'Are you sure you want to change the status back to in process?',
+      confirmText: 'Reset',
+      variant: 'warning',
+      onConfirm: () => confirmUpdateStatus(requestId, 'IN_PROCESS')
+    });
+  };
+
+  const confirmUpdateStatus = async (requestId, status) => {
+    try {
+      await adoptionRequestService.updateRequestStatus(requestId, status);
+      refetchRequests();
+      
+
+      if (viewingRequest?.id === requestId) {
+        const updatedRequest = await adoptionRequestService.getRequestById(requestId);
+        setViewingRequest(updatedRequest);
       }
+      
+      closeConfirmModal();
+    } catch (error) {
+      alert('Failed to update request: ' + (error.response?.data?.message || error.message));
+      closeConfirmModal();
     }
   };
 
 
   const getStatusBadgeClass = (status) => {
-    switch (status) {
-      case 'AVAILABLE':
-        return styles.statusAvailable;
-      case 'IN_PROCESS':
-        return styles.statusInProcess;
-      case 'ADOPTED':
-        return styles.statusAdopted;
-      case 'APPROVED':
-        return styles.statusApproved;
-      case 'DENIED':
-        return styles.statusDenied;
-      default:
-        return '';
-    }
+    const statusMap = {
+      AVAILABLE: styles.statusAvailable,
+      IN_PROCESS: styles.statusInProcess,
+      ADOPTED: styles.statusAdopted,
+      APPROVED: styles.statusApproved,
+      DENIED: styles.statusDenied
+    };
+    return statusMap[status] || '';
   };
 
-  const formatStatus = (status) => {
-    return status === 'IN_PROCESS' ? 'In process' : status.toLowerCase();
-  };
+  const formatStatus = (status) => status === 'IN_PROCESS' ? 'In process' : status.toLowerCase();
+
+
+  const DogTableRow = ({ dog }) => (
+    <tr>
+      <td>
+        {dog.photoUrl ? (
+          <img 
+            src={fileService.getFileUrl(dog.photoUrl)} 
+            alt={dog.name}
+            className={styles.dogPhoto}
+          />
+        ) : (
+          <div className={styles.noPhoto}>No photo</div>
+        )}
+      </td>
+      <td className={styles.nameCell}>{dog.name}</td>
+      <td className={styles.storyCell}>
+        {dog.story ? `${dog.story.substring(0, 50)}...` : '-'}
+      </td>
+      <td>{dog.gender}</td>
+      <td>{dog.age}</td>
+      <td>{dog.size}</td>
+      <td>
+        <span className={`${styles.badge} ${getStatusBadgeClass(dog.status)}`}>
+          {formatStatus(dog.status)}
+        </span>
+      </td>
+      <td>{dog.adoptionRequestsCount || 0}</td>
+      <td>
+        <div className={styles.actions}>
+          <button 
+            className={styles.iconButton} 
+            title="Edit"
+            onClick={() => handleEditDog(dog)}
+          >
+            ✏️
+          </button>
+          <button 
+            className={styles.iconButton} 
+            title="Delete"
+            onClick={() => handleDeleteDog(dog.id, dog.name)}
+          >
+            🗑️
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
+
+  const RequestTableRow = ({ request }) => (
+    <tr>
+      <td>{request.requesterFirstName} {request.requesterLastName}</td>
+      <td>{request.requesterEmail}</td>
+      <td>{request.dogName || '-'}</td>
+      <td>
+        <span className={`${styles.badge} ${getStatusBadgeClass(request.status)}`}>
+          {formatStatus(request.status)}
+        </span>
+      </td>
+      <td>{new Date(request.createdAt).toLocaleDateString()}</td>
+      <td>
+        <button 
+          className={styles.iconButton} 
+          title="View Form"
+          onClick={() => handleViewRequest(request.id)}
+        >
+          👁️
+        </button>
+      </td>
+      <td>
+        <div className={styles.actions}>
+          {request.status === 'IN_PROCESS' ? (
+            <>
+              <button 
+                className={styles.approveButton} 
+                title="Approve"
+                onClick={() => handleApproveRequest(request.id)}
+              >
+                ✓
+              </button>
+              <button 
+                className={styles.denyButton} 
+                title="Deny"
+                onClick={() => handleDenyRequest(request.id)}
+              >
+                ✕
+              </button>
+            </>
+          ) : (
+            <>
+              <button 
+                className={styles.iconButton} 
+                title="Reset to In Process"
+                onClick={() => handleResetRequest(request.id)}
+              >
+                🔄
+              </button>
+              {request.status === 'DENIED' && (
+                <button 
+                  className={styles.approveButton} 
+                  title="Approve"
+                  onClick={() => handleApproveRequest(request.id)}
+                >
+                  ✓
+                </button>
+              )}
+              {request.status === 'APPROVED' && (
+                <button 
+                  className={styles.denyButton} 
+                  title="Deny"
+                  onClick={() => handleDenyRequest(request.id)}
+                >
+                  ✕
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
 
 
   if (dogsLoading || requestsLoading) {
@@ -143,17 +301,20 @@ const AdminDashboardPage = () => {
     );
   }
 
+
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-        <div className={styles.header}>
+
+        <header className={styles.header}>
           <h1 className={styles.title}>Admin Dashboard</h1>
           <button onClick={handleLogout} className={styles.logoutButton}>
             Logout
           </button>
-        </div>
+        </header>
 
-        <div className={styles.tabs}>
+
+        <nav className={styles.tabs}>
           <button
             className={`${styles.tab} ${activeTab === 'dogs' ? styles.tabActive : ''}`}
             onClick={() => setActiveTab('dogs')}
@@ -166,10 +327,11 @@ const AdminDashboardPage = () => {
           >
             Adoption Requests ({requests.length})
           </button>
-        </div>
+        </nav>
+
 
         {activeTab === 'dogs' && (
-          <div className={styles.section}>
+          <section className={styles.section}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>Dog Profiles</h2>
               <Button variant="primary" size="small" onClick={handleAddDog}>
@@ -178,13 +340,11 @@ const AdminDashboardPage = () => {
             </div>
 
             {dogsError && (
-              <div className={styles.errorMessage}>
-                Error loading dogs: {dogsError}
-              </div>
+              <div className={styles.errorMessage}>Error loading dogs: {dogsError}</div>
             )}
 
-            {showDogForm && (
-              <div className={styles.formContainer}>
+            {showDogForm ? (
+              <article className={styles.formContainer}>
                 <h3 className={styles.formTitle}>
                   {editingDog ? `Edit ${editingDog.name}` : 'Add New Dog Profile'}
                 </h3>
@@ -193,10 +353,8 @@ const AdminDashboardPage = () => {
                   onSuccess={handleDogFormSuccess}
                   onCancel={handleCancelDogForm}
                 />
-              </div>
-            )}
-
-            {!showDogForm && (
+              </article>
+            ) : (
               <div className={styles.tableWrapper}>
                 <table className={styles.table}>
                   <thead>
@@ -220,68 +378,22 @@ const AdminDashboardPage = () => {
                         </td>
                       </tr>
                     ) : (
-                      dogs.map((dog) => (
-                        <tr key={dog.id}>
-                          <td>
-                            {dog.photoUrl ? (
-                              <img 
-                                src={fileService.getFileUrl(dog.photoUrl)} 
-                                alt={dog.name}
-                                className={styles.dogPhoto}
-                              />
-                            ) : (
-                              <div className={styles.noPhoto}>No photo</div>
-                            )}
-                          </td>
-                          <td className={styles.nameCell}>{dog.name}</td>
-                          <td className={styles.storyCell}>
-                            {dog.story ? dog.story.substring(0, 50) + '...' : '-'}
-                          </td>
-                          <td>{dog.gender}</td>
-                          <td>{dog.age}</td>
-                          <td>{dog.size}</td>
-                          <td>
-                            <span className={`${styles.badge} ${getStatusBadgeClass(dog.status)}`}>
-                              {formatStatus(dog.status)}
-                            </span>
-                          </td>
-                          <td>{dog.adoptionRequestsCount || 0}</td>
-                          <td>
-                            <div className={styles.actions}>
-                              <button 
-                                className={styles.iconButton} 
-                                title="Edit"
-                                onClick={() => handleEditDog(dog)}
-                              >
-                                ✏️
-                              </button>
-                              <button 
-                                className={styles.iconButton} 
-                                title="Delete"
-                                onClick={() => handleDeleteDog(dog.id, dog.name)}
-                              >
-                                🗑️
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
+                      dogs.map(dog => <DogTableRow key={dog.id} dog={dog} />)
                     )}
                   </tbody>
                 </table>
               </div>
             )}
-          </div>
+          </section>
         )}
 
+
         {activeTab === 'requests' && (
-          <div className={styles.section}>
+          <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Adoption Requests</h2>
 
             {requestsError && (
-              <div className={styles.errorMessage}>
-                Error loading requests: {requestsError}
-              </div>
+              <div className={styles.errorMessage}>Error loading requests: {requestsError}</div>
             )}
 
             <div className={styles.tableWrapper}>
@@ -305,69 +417,28 @@ const AdminDashboardPage = () => {
                       </td>
                     </tr>
                   ) : (
-                    requests.map((request) => (
-                      <tr key={request.id}>
-                        <td>{request.requesterFirstName} {request.requesterLastName}</td>
-                        <td>{request.requesterEmail}</td>
-                        <td>{request.dogName || '-'}</td>
-                        <td>
-                          <span className={`${styles.badge} ${getStatusBadgeClass(request.status)}`}>
-                            {formatStatus(request.status)}
-                          </span>
-                        </td>
-                        <td>{new Date(request.createdAt).toLocaleDateString()}</td>
-                        <td>
-                          <button 
-                            className={styles.iconButton} 
-                            title="View Form"
-                            onClick={() => handleViewRequest(request.id)}
-                          >
-                            👁️
-                          </button>
-                        </td>
-                        <td>
-                          <div className={styles.actions}>
-                            {request.status === 'IN_PROCESS' && (
-                              <>
-                                <button 
-                                  className={styles.approveButton} 
-                                  title="Approve"
-                                  onClick={() => handleApproveRequest(request.id)}
-                                >
-                                  ✓
-                                </button>
-                                <button 
-                                  className={styles.denyButton} 
-                                  title="Deny"
-                                  onClick={() => handleDenyRequest(request.id)}
-                                >
-                                  ✕
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))
+                    requests.map(request => <RequestTableRow key={request.id} request={request} />)
                   )}
                 </tbody>
               </table>
             </div>
-          </div>
+          </section>
         )}
+
 
         {viewingRequest && (
           <div className={styles.modalBackdrop} onClick={() => setViewingRequest(null)}>
-            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-              <div className={styles.modalHeader}>
+            <article className={styles.modal} onClick={(e) => e.stopPropagation()}>
+              <header className={styles.modalHeader}>
                 <h3>Adoption Request Details</h3>
                 <button 
                   className={styles.closeButton}
                   onClick={() => setViewingRequest(null)}
+                  aria-label="Close modal"
                 >
                   ✕
                 </button>
-              </div>
+              </header>
               
               <div className={styles.modalBody}>
                 <div className={styles.detailRow}>
@@ -406,27 +477,68 @@ const AdminDashboardPage = () => {
                 </div>
               </div>
 
-              {viewingRequest.status === 'IN_PROCESS' && (
-                <div className={styles.modalFooter}>
-                  <Button 
-                    variant="secondary" 
-                    size="small"
-                    onClick={() => handleDenyRequest(viewingRequest.id)}
-                  >
-                    Deny
-                  </Button>
-                  <Button 
-                    variant="primary" 
-                    size="small"
-                    onClick={() => handleApproveRequest(viewingRequest.id)}
-                  >
-                    Approve
-                  </Button>
-                </div>
-              )}
-            </div>
+              <footer className={styles.modalFooter}>
+                {viewingRequest.status === 'IN_PROCESS' ? (
+                  <>
+                    <Button 
+                      variant="secondary" 
+                      size="small"
+                      onClick={() => handleDenyRequest(viewingRequest.id)}
+                    >
+                      Deny
+                    </Button>
+                    <Button 
+                      variant="primary" 
+                      size="small"
+                      onClick={() => handleApproveRequest(viewingRequest.id)}
+                    >
+                      Approve
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button 
+                      variant="secondary" 
+                      size="small"
+                      onClick={() => handleResetRequest(viewingRequest.id)}
+                    >
+                      Reset to In Process
+                    </Button>
+                    {viewingRequest.status === 'DENIED' && (
+                      <Button 
+                        variant="primary" 
+                        size="small"
+                        onClick={() => handleApproveRequest(viewingRequest.id)}
+                      >
+                        Approve
+                      </Button>
+                    )}
+                    {viewingRequest.status === 'APPROVED' && (
+                      <Button 
+                        variant="secondary" 
+                        size="small"
+                        onClick={() => handleDenyRequest(viewingRequest.id)}
+                      >
+                        Deny
+                      </Button>
+                    )}
+                  </>
+                )}
+              </footer>
+            </article>
           </div>
         )}
+
+        <ConfirmModal
+          isOpen={confirmModal.isOpen}
+          title={confirmModal.title}
+          message={confirmModal.message}
+          confirmText={confirmModal.confirmText}
+          variant={confirmModal.variant}
+          onConfirm={confirmModal.onConfirm}
+          onCancel={closeConfirmModal}
+        />
+
       </div>
     </div>
   );
