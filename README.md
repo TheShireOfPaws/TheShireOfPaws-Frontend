@@ -41,7 +41,7 @@ La aplicación frontend necesita comunicarse con el Backend API, que por defecto
 
 Define esta variable en el archivo **`.env`** en la raíz del directorio `frontend`:
 
-###🏃 Running the Application
+### 🏃 Running the Application
 
 After installing dependencies and configuring the API base URL in the .env file, you can start the local development server.
 
