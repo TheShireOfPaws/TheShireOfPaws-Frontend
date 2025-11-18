@@ -17,10 +17,17 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
     setIsLoading(true);
 
     try {
+      console.log('Attempting login...'); 
+      
       await login({ email, password });
+      
+      console.log('Login successful!'); 
+      console.log('Token saved:', localStorage.getItem('token')); 
+      
       onLoginSuccess();
       onClose();
     } catch (err) {
+      console.error('Login error:', err);
       setError(typeof err === 'string' ? err : 'Invalid email or password');
     } finally {
       setIsLoading(false);
@@ -36,7 +43,6 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
   return (
     <div className={styles.backdrop} onClick={handleBackdropClick}>
       <div className={styles.modal}>
-        {/* Header */}
         <div className={styles.header}>
           <h2 className={styles.title}>Admin Login</h2>
           <button 
@@ -48,7 +54,6 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.field}>
             <label htmlFor="email" className={styles.label}>

@@ -173,3 +173,20 @@
     font-size: 40px;
   }
 }
+
+.loading,
+.error {
+  text-align: center;
+  padding: var(--spacing-xxl);
+  font-size: var(--font-size-medium);
+  color: var(--color-brown);
+}
+
+.error {
+  color: var(--color-error);
+  background-color: #fee;
+  border-radius: var(--radius-md);
+  margin: var(--spacing-xl);
+  padding: var(--spacing-xl);
+  border: 2px solid var(--color-error);
+}

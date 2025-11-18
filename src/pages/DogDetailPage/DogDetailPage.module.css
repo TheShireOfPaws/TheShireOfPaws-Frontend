@@ -1,4 +1,3 @@
-
 .page {
   background-color: var(--color-cream);
   min-height: 100vh;
@@ -10,7 +9,6 @@
   margin: 0 auto;
   padding: 0 var(--container-padding);
 }
-
 
 
 .backButton {
@@ -36,19 +34,19 @@
 }
 
 
-
 .content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: start;  
-  gap: var(--spacing-xxl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
 }
-
-
 
 
 .imageSection {
   position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-lg);
@@ -57,7 +55,8 @@
 
 .image {
   width: 100%;
-  height: auto;    
+  height: auto;
+  max-height: 600px;
   object-fit: cover;
   display: block;
 }
@@ -85,67 +84,12 @@
 }
 
 
-
-.infoSection {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-}
-
-.name {
-  font-size: 56px;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-green);
-  margin: 0;
-  line-height: 1.1;
-}
-
-
-
-.details {
-  display: flex;
-  gap: var(--spacing-xl);
-  flex-wrap: wrap;
-}
-
-.detailItem {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
+.storyBox {
   background-color: var(--color-white);
-  padding: var(--spacing-md);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-  flex: 1;
-  min-width: 150px;
-}
-
-.detailIcon {
-  font-size: 40px;
-}
-
-.detailLabel {
-  display: block;
-  font-size: 16px;
-  color: var(--color-gray-dark);
-  font-weight: var(--font-weight-medium);
-}
-
-.detailValue {
-  display: block;
-  font-size: 24px;
-  color: var(--color-brown);
-  font-weight: var(--font-weight-semibold);
-  text-transform: capitalize;
-}
-
-
-
-.story {
-  background-color: var(--color-white);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-xl);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
+  margin-top: var(--spacing-xl);
 }
 
 .storyTitle {
@@ -160,8 +104,47 @@
   line-height: var(--line-height-relaxed);
   color: var(--color-brown);
   text-align: justify;
+  margin: 0;
 }
 
+
+.infoSection {
+  background-color: var(--color-white);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  margin-top: var(--spacing-xl);
+}
+
+.details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.detailItem {
+  text-align: center;
+  padding: var(--spacing-lg);
+  background-color: var(--color-cream);
+  border-radius: var(--radius-md);
+}
+
+.detailLabel {
+  display: block;
+  font-size: 16px;
+  color: var(--color-gray-dark);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--spacing-xs);
+}
+
+.detailValue {
+  display: block;
+  font-size: 28px;
+  color: var(--color-brown);
+  font-weight: var(--font-weight-bold);
+  text-transform: capitalize;
+}
 
 
 .adoptedMessage {
@@ -180,14 +163,13 @@
 }
 
 
-
 .formSection {
   background-color: var(--color-white);
   padding: var(--spacing-xxl);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   scroll-margin-top: var(--spacing-xl);
-   margin-top: var(--spacing-xxxl);
+  margin-top: var(--spacing-xxxl);
 }
 
 .formTitle {
@@ -205,46 +187,40 @@
   margin-bottom: var(--spacing-xl);
 }
 
-.formPlaceholder {
-  background-color: var(--color-cream);
-  padding: var(--spacing-xxl);
-  border-radius: var(--radius-md);
+
+.loading,
+.error {
   text-align: center;
-  font-size: 24px;
+  padding: var(--spacing-xxl);
+  font-size: var(--font-size-medium);
+  margin: var(--spacing-xl) 0;
 }
 
-
-
-@media (max-width: 1024px) {
-  .content {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-xl);
-  }
-
-  .image {
-    height: 400px;
-  }
-
-  .name {
-    font-size: 48px;
-  }
+.error {
+  color: var(--color-error);
+  background-color: #fee;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xl);
+  border: 2px solid var(--color-error);
 }
+
 
 @media (max-width: 768px) {
   .page {
     padding: var(--spacing-lg) 0;
   }
 
-  .name {
-    font-size: 36px;
+  .imageSection {
+    max-width: 100%;
+  }
+
+  .image {
+    max-height: 400px;
   }
 
   .details {
-    flex-direction: column;
-  }
-
-  .detailItem {
-    min-width: 100%;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
   }
 
   .storyText {

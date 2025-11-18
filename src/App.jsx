@@ -27,7 +27,7 @@ function App() {
           <Footer />
         </div>
       </BrowserRouter>
-    </AuthProvider>  {/* ⭐ CERRAR */}
+    </AuthProvider>  
   );
 }
 

@@ -1,32 +1,38 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '../../components/common/Button/Button';
-import AdoptionForm from '../../components/adoption/AdoptionForm/AdoptionForm';  
+import AdoptionForm from '../../components/adoption/AdoptionForm/AdoptionForm';
+import dogService from '../../services/dogService';
+import fileService from '../../services/fileService';
 import styles from './DogDetailPage.module.css';
 
 const DogDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [showAdoptionForm, setShowAdoptionForm] = useState(false);
+  
+  const [dog, setDog] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // MOCK (luego backend)
-  const mockDog = {
-    id,
-    name: 'Buddy',
-    age: 3,
-    gender: 'MALE',
-    size: 'MEDIUM',
-    status: 'AVAILABLE',
-    story:
-      'Buddy is a friendly and playful dog who loves to be around people. He was rescued from the streets when he was just a puppy and has been living in our shelter for the past year. Buddy is house-trained, gets along well with other dogs, and loves children. He enjoys long walks, playing fetch, and cuddling on the couch. Buddy would make a perfect companion for an active family or someone who enjoys outdoor activities. He is up to date on all his vaccinations and has been neutered. If you are looking for a loyal and loving friend, Buddy is waiting to meet you!',
-    photoUrl:
-      'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
-    adoptionRequestsCount: 2,
-  };
+  useEffect(() => {
+    const fetchDog = async () => {
+      try {
+        setLoading(true);
+        const data = await dogService.getDogById(id);
+        setDog(data);
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to load dog details');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDog();
+  }, [id]);
 
   const handleAdoptClick = () => {
     setShowAdoptionForm(true);
-
     setTimeout(() => {
       document
         .getElementById('adoption-form')
@@ -34,17 +40,38 @@ const DogDetailPage = () => {
     }, 100);
   };
 
-
   const handleFormSuccess = () => {
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 2000);
   };
 
+  if (loading) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.container}>
+          <div className={styles.loading}>Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !dog) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.container}>
+          <div className={styles.error}>{error || 'Dog not found'}</div>
+          <Button onClick={() => navigate('/dogs')} variant="primary">
+            Back to Dogs
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-
         <button
           onClick={() => navigate('/dogs')}
           className={styles.backButton}
@@ -52,75 +79,70 @@ const DogDetailPage = () => {
           ← Back to Dogs
         </button>
 
-
         <div className={styles.content}>
-
-
           <div className={styles.imageSection}>
             <img
-              src={mockDog.photoUrl}
-              alt={mockDog.name}
+              src={dog.photoUrl ? fileService.getFileUrl(dog.photoUrl) : '/placeholder.jpg'}
+              alt={dog.name}
               className={styles.image}
             />
 
-            {mockDog.status === 'AVAILABLE' && (
+            {dog.status === 'AVAILABLE' && (
               <span className={styles.badge}>Available for Adoption</span>
             )}
           </div>
 
-
           <div className={styles.storyBox}>
-            <h2 className={styles.storyTitle}>About {mockDog.name}</h2>
-            <p className={styles.storyText}>{mockDog.story}</p>
+            <h2 className={styles.storyTitle}>About {dog.name}</h2>
+            <p className={styles.storyText}>{dog.story || 'No story available.'}</p>
           </div>
         </div>
-
 
         <div className={styles.infoSection}>
           <div className={styles.details}>
             <div className={styles.detailItem}>
               <span className={styles.detailLabel}>Age</span>
               <span className={styles.detailValue}>
-                {mockDog.age} Years
+                {dog.age} {dog.age === 1 ? 'Year' : 'Years'}
               </span>
             </div>
 
             <div className={styles.detailItem}>
               <span className={styles.detailLabel}>Gender</span>
-              <span className={styles.detailValue}>{mockDog.gender}</span>
+              <span className={styles.detailValue}>{dog.gender}</span>
             </div>
 
             <div className={styles.detailItem}>
               <span className={styles.detailLabel}>Size</span>
-              <span className={styles.detailValue}>{mockDog.size}</span>
+              <span className={styles.detailValue}>{dog.size}</span>
             </div>
           </div>
 
-          <Button
-            variant="primary"
-            size="large"
-            onClick={handleAdoptClick}
-            fullWidth
-          >
-            I Want to Adopt {mockDog.name}
-          </Button>
+          {dog.status === 'AVAILABLE' && (
+            <Button
+              variant="primary"
+              size="large"
+              onClick={handleAdoptClick}
+              fullWidth
+            >
+              I Want to Adopt {dog.name}
+            </Button>
+          )}
         </div>
-
 
         {showAdoptionForm && (
           <div id="adoption-form" className={styles.formSection}>
             <h2 className={styles.formTitle}>
-              Adoption Application for {mockDog.name}
+              Adoption Application for {dog.name}
             </h2>
 
             <p className={styles.formSubtitle}>
               Please fill out this form to start the adoption process. We will review your application and get back to you soon!
             </p>
 
-
             <AdoptionForm 
-              dogId={mockDog.id}
-              dogName={mockDog.name}
+              dogId={dog.id}
+              dogName={dog.name}
               onSuccess={handleFormSuccess}
             />
           </div>

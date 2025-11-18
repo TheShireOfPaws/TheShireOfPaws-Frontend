@@ -7,37 +7,42 @@ import dogService from '../../services/dogService';
 import adoptionRequestService from '../../services/adoptionRequestService';
 import fileService from '../../services/fileService';
 import Button from '../../components/common/Button/Button';
-import DogProfileForm from '../../components/admin/DogProfileForm/DogProfileForm';
+import DogProfileForm from '../../components/admin/Dashboard/DogProfileForm';
 import styles from './AdminDashboardPage.module.css';
 
 const AdminDashboardPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth();
+  const { logout } = useAuth();
   const [activeTab, setActiveTab] = useState('dogs');
-  
 
   const [showDogForm, setShowDogForm] = useState(false);
   const [editingDog, setEditingDog] = useState(null);
   
 
   const [viewingRequest, setViewingRequest] = useState(null);
-  
 
   const { dogs, loading: dogsLoading, error: dogsError, refetch: refetchDogs } = useDogs();
   const { requests, loading: requestsLoading, error: requestsError, refetch: refetchRequests } = useAdoptionRequests();
   
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    const token = localStorage.getItem('token');
+    
+    console.log('Dashboard - Checking auth...'); 
+    console.log('Token exists:', !!token); 
+    
+    if (!token) {
+      console.log('No token found, redirecting to home'); 
       navigate('/');
+    } else {
+      console.log('Token found, user is authenticated'); 
     }
-  }, [isAuthenticated, navigate]);
+  }, [navigate]);
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
-
 
   
   const handleAddDog = () => {
@@ -71,8 +76,6 @@ const AdminDashboardPage = () => {
     setShowDogForm(false);
     setEditingDog(null);
   };
-
-
 
   const handleViewRequest = async (requestId) => {
     try {
@@ -108,7 +111,6 @@ const AdminDashboardPage = () => {
   };
 
 
-
   const getStatusBadgeClass = (status) => {
     switch (status) {
       case 'AVAILABLE':
@@ -131,7 +133,6 @@ const AdminDashboardPage = () => {
   };
 
 
-
   if (dogsLoading || requestsLoading) {
     return (
       <div className={styles.page}>
@@ -145,14 +146,12 @@ const AdminDashboardPage = () => {
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-
         <div className={styles.header}>
           <h1 className={styles.title}>Admin Dashboard</h1>
           <button onClick={handleLogout} className={styles.logoutButton}>
             Logout
           </button>
         </div>
-
 
         <div className={styles.tabs}>
           <button
@@ -168,7 +167,6 @@ const AdminDashboardPage = () => {
             Adoption Requests ({requests.length})
           </button>
         </div>
-
 
         {activeTab === 'dogs' && (
           <div className={styles.section}>
@@ -357,7 +355,6 @@ const AdminDashboardPage = () => {
             </div>
           </div>
         )}
-
 
         {viewingRequest && (
           <div className={styles.modalBackdrop} onClick={() => setViewingRequest(null)}>

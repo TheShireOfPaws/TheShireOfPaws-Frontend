@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Button from '../../common/Button/Button';
+import adoptionRequestService from '../../../services/adoptionRequestService';
 import styles from './AdoptionForm.module.css';
 
 const AdoptionForm = ({ dogId, dogName, onSuccess }) => {
@@ -82,30 +83,20 @@ const AdoptionForm = ({ dogId, dogName, onSuccess }) => {
     setIsSubmitting(true);
 
     try {
-      // Simular llamada al backend
-      // const response = await fetch('http://localhost:8080/api/adoption-requests', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify({
-      //     ...formData,
-      //     dogId: dogId
-      //   })
-      // });
+      await adoptionRequestService.createRequest({
+        ...formData,
+        householdSize: parseInt(formData.householdSize),
+        dogId: dogId
+      });
 
-      // if (!response.ok) throw new Error('Failed to submit');
-
-      // Simulación de éxito
-      setTimeout(() => {
-        setSubmitSuccess(true);
-        setIsSubmitting(false);
-        if (onSuccess) onSuccess();
-      }, 1000);
-
+      setSubmitSuccess(true);
+      if (onSuccess) onSuccess();
     } catch (error) {
       console.error('Error submitting form:', error);
-      setErrors({ submit: 'Failed to submit application. Please try again.' });
+      setErrors({ 
+        submit: error.response?.data?.message || 'Failed to submit application. Please try again.' 
+      });
+    } finally {
       setIsSubmitting(false);
     }
   };

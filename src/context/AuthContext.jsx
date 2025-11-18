@@ -8,11 +8,12 @@ export const AuthProvider = ({ children }) => {
   const [adminEmail, setAdminEmail] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Verificar autenticación al cargar
   useEffect(() => {
     const checkAuth = () => {
       const authenticated = authService.isAuthenticated();
       const email = authService.getAdminEmail();
+      
+      console.log('Checking auth...', { authenticated, email });
       
       setIsAuthenticated(authenticated);
       setAdminEmail(email);
@@ -20,15 +21,33 @@ export const AuthProvider = ({ children }) => {
     };
 
     checkAuth();
+
+
+    const handleStorageChange = () => {
+      checkAuth();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const login = async (credentials) => {
     try {
+      console.log(' Login called');
+      
       const data = await authService.login(credentials);
+      
+      console.log('Login successful');
+      
       setIsAuthenticated(true);
       setAdminEmail(data.email);
+      
       return data;
     } catch (error) {
+      console.error('Login failed:', error);
       throw error;
     }
   };
@@ -54,7 +73,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Hook personalizado para usar el contexto
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

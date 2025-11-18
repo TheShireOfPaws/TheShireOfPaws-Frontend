@@ -23,7 +23,7 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
 
-  // Si estamos editando, cargar datos del perro
+
   useEffect(() => {
     if (dog) {
       setFormData({
@@ -36,7 +36,7 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
         status: dog.status || 'AVAILABLE'
       });
       
-      // Cargar preview de imagen existente
+
       if (dog.photoUrl) {
         setPreviewUrl(fileService.getFileUrl(dog.photoUrl));
       }
@@ -50,7 +50,7 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
       [name]: value
     }));
     
-    // Limpiar error del campo
+
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -63,7 +63,6 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
     const file = e.target.files[0];
     
     if (file) {
-      // Validar tipo de archivo
       if (!file.type.startsWith('image/')) {
         setErrors(prev => ({
           ...prev,
@@ -72,25 +71,22 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
         return;
       }
 
-      // Validar tamaño (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
+      if (file.size > 10 * 1024 * 1024) {
         setErrors(prev => ({
           ...prev,
-          photo: 'Image size must be less than 5MB'
+          photo: 'Image size must be less than 10MB'
         }));
         return;
       }
 
       setSelectedFile(file);
       
-      // Crear preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewUrl(reader.result);
       };
       reader.readAsDataURL(file);
       
-      // Limpiar error de foto
       setErrors(prev => ({
         ...prev,
         photo: ''
@@ -125,7 +121,6 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
       newErrors.status = 'Status is required';
     }
 
-    // En modo crear, validar que haya foto
     if (!isEditMode && !selectedFile && !formData.photoUrl) {
       newErrors.photo = 'Please upload a photo';
     }
@@ -146,7 +141,6 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
     try {
       let photoUrl = formData.photoUrl;
 
-      // Si hay nueva imagen, subirla primero
       if (selectedFile) {
         setUploadingImage(true);
         const uploadResponse = await fileService.uploadFile(selectedFile);
@@ -154,7 +148,6 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
         setUploadingImage(false);
       }
 
-      // Preparar datos para enviar
       const dogData = {
         name: formData.name.trim(),
         story: formData.story.trim() || null,
@@ -165,14 +158,12 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
         status: formData.status
       };
 
-      // Crear o actualizar
       if (isEditMode) {
         await dogService.updateDog(dog.id, dogData);
       } else {
         await dogService.createDog(dogData);
       }
 
-      // Callback de éxito
       if (onSuccess) {
         onSuccess();
       }
@@ -189,7 +180,6 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
-      {/* Nombre y Edad */}
       <div className={styles.row}>
         <div className={styles.field}>
           <label htmlFor="name" className={styles.label}>
@@ -230,7 +220,6 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
         </div>
       </div>
 
-      {/* Story */}
       <div className={styles.field}>
         <label htmlFor="story" className={styles.label}>
           Story
@@ -246,7 +235,6 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
         />
       </div>
 
-      {/* Gender y Size */}
       <div className={styles.row}>
         <div className={styles.field}>
           <label htmlFor="gender" className={styles.label}>
@@ -341,7 +329,6 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
         </div>
       </div>
 
-      {/* Status */}
       <div className={styles.field}>
         <label htmlFor="status" className={styles.label}>
           Status <span className={styles.required}>*</span>
@@ -383,7 +370,6 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
         )}
       </div>
 
-      {/* Upload Photo */}
       <div className={styles.field}>
         <label className={styles.label}>
           Upload Photo {!isEditMode && <span className={styles.required}>*</span>}
@@ -413,14 +399,11 @@ const DogProfileForm = ({ dog = null, onSuccess, onCancel }) => {
         )}
       </div>
 
-      {/* Submit Error */}
       {errors.submit && (
         <div className={styles.submitError}>
           {errors.submit}
         </div>
       )}
-
-      {/* Buttons */}
       <div className={styles.buttons}>
         {onCancel && (
           <Button 
