@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
-import dogService from '../services/dogService';
+import adoptionRequestService from '../services/adoptionRequestService';
 
 /**
- * Hook para obtener lista de perros
+ * Hook para obtener solicitudes de adopción
  * @param {Object} params - Parámetros de paginación y filtros
- * @returns {Object} { dogs, loading, error, totalPages, refetch }
+ * @returns {Object} { requests, loading, error, totalPages, refetch }
  */
-const useDogs = (params = {}) => {
-  const [dogs, setDogs] = useState([]);
+const useAdoptionRequests = (params = {}) => {
+  const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
 
-  const fetchDogs = async () => {
+  const fetchRequests = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -21,35 +21,35 @@ const useDogs = (params = {}) => {
       let response;
       
       // Si hay filtros, usar el endpoint de filtrado
-      if (params.status || params.name || params.gender || params.size) {
-        response = await dogService.filterDogs(params);
+      if (params.status || params.dogId || params.requesterName) {
+        response = await adoptionRequestService.filterRequests(params);
       } else {
-        response = await dogService.getAllDogs(params);
+        response = await adoptionRequestService.getAllRequests(params);
       }
       
-      setDogs(response.content || []);
+      setRequests(response.content || []);
       setTotalPages(response.totalPages || 0);
       setTotalElements(response.totalElements || 0);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch dogs');
-      setDogs([]);
+      setError(err.response?.data?.message || 'Failed to fetch adoption requests');
+      setRequests([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchDogs();
+    fetchRequests();
   }, [JSON.stringify(params)]); // Refetch cuando cambien los parámetros
 
   return {
-    dogs,
+    requests,
     loading,
     error,
     totalPages,
     totalElements,
-    refetch: fetchDogs
+    refetch: fetchRequests
   };
 };
 
-export default useDogs;
+export default useAdoptionRequests;

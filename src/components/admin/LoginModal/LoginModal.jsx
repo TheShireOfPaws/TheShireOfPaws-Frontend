@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useAuth } from '../../../context/AuthContext';
 import styles from './LoginModal.module.css';
 
 const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -15,34 +17,12 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
     setIsLoading(true);
 
     try {
-      // Simular llamada al backend
-      // const response = await fetch('http://localhost:8080/api/auth/login', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   },
-      //   body: JSON.stringify({ email, password })
-      // });
-
-      // if (!response.ok) throw new Error('Invalid credentials');
-      // const data = await response.json();
-      // localStorage.setItem('token', data.token);
-
-      // Simulación
-      setTimeout(() => {
-        if (email === 'admin@theshireofpaws.com' && password === 'admin123') {
-          localStorage.setItem('token', 'fake-token-123');
-          localStorage.setItem('adminEmail', email);
-          onLoginSuccess();
-          onClose();
-        } else {
-          setError('Invalid email or password');
-        }
-        setIsLoading(false);
-      }, 1000);
-
+      await login({ email, password });
+      onLoginSuccess();
+      onClose();
     } catch (err) {
-      setError('Login failed. Please try again.');
+      setError(typeof err === 'string' ? err : 'Invalid email or password');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -114,13 +94,6 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
             {isLoading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-
-        {/* Test credentials hint */}
-        <div className={styles.hint}>
-          <p>Test credentials:</p>
-          <p>Email: admin@theshireofpaws.com</p>
-          <p>Password: admin123</p>
-        </div>
       </div>
     </div>
   );
