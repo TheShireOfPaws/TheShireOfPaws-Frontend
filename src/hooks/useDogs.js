@@ -1,11 +1,6 @@
 import { useState, useEffect } from 'react';
 import dogService from '../services/dogService';
 
-/**
- * Hook para obtener lista de perros
- * @param {Object} params - Parámetros de paginación y filtros
- * @returns {Object} { dogs, loading, error, totalPages, refetch }
- */
 const useDogs = (params = {}) => {
   const [dogs, setDogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +15,6 @@ const useDogs = (params = {}) => {
       
       let response;
       
-      // Si hay filtros, usar el endpoint de filtrado
       if (params.status || params.name || params.gender || params.size) {
         response = await dogService.filterDogs(params);
       } else {
@@ -40,7 +34,7 @@ const useDogs = (params = {}) => {
 
   useEffect(() => {
     fetchDogs();
-  }, [JSON.stringify(params)]); // Refetch cuando cambien los parámetros
+  }, [JSON.stringify(params)]);
 
   return {
     dogs,

@@ -61,6 +61,9 @@ const AdoptionForm = ({ dogId, dogName, onSuccess }) => {
 
     setIsSubmitting(true);
 
+     console.log('Form data antes de enviar:', formData);
+  console.log('householdSize parsed:', parseInt(formData.householdSize, 10));
+
     try {
       await adoptionRequestService.createRequest({
         ...formData,

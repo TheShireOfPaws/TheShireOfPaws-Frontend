@@ -11,7 +11,6 @@ const Navbar = () => {
   return (
     <nav className={styles.navbar} role="navigation" aria-label="Main navigation">
       <div className={styles.container}>
-        {/* Logo */}
         <div className={styles.logo}>
           <a href="/" aria-label="The Shire Of Paws - Home">
             <img 
@@ -23,13 +22,13 @@ const Navbar = () => {
           </a>
         </div>
 
-        {/* Desktop Menu */}
+
         <ul className={styles.menu}>
           <li><a href="/" className={styles.menuLink}>Home</a></li>
           <li><a href="/dogs" className={styles.menuLink}>Adopt a Dog</a></li>
         </ul>
 
-        {/* Mobile Menu Button */}
+
         <button 
           className={styles.menuButton}
           onClick={toggleMenu}
@@ -42,7 +41,7 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
+
       {isMenuOpen && (
         <div className={styles.mobileMenu}>
           <ul className={styles.mobileMenuList}>

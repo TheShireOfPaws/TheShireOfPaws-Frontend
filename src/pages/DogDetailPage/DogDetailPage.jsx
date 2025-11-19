@@ -79,14 +79,13 @@ const DogDetailPage = () => {
           ← Back to Dogs
         </button>
 
-        <div className={styles.content}>
+        <div className={styles.mainCard}>
           <div className={styles.imageSection}>
             <img
               src={dog.photoUrl ? fileService.getFileUrl(dog.photoUrl) : '/placeholder.jpg'}
               alt={dog.name}
               className={styles.image}
             />
-
             {dog.status === 'AVAILABLE' && (
               <span className={styles.badge}>Available for Adoption</span>
             )}
@@ -96,9 +95,7 @@ const DogDetailPage = () => {
             <h2 className={styles.storyTitle}>About {dog.name}</h2>
             <p className={styles.storyText}>{dog.story || 'No story available.'}</p>
           </div>
-        </div>
 
-        <div className={styles.infoSection}>
           <div className={styles.details}>
             <div className={styles.detailItem}>
               <span className={styles.detailLabel}>Age</span>
@@ -117,18 +114,20 @@ const DogDetailPage = () => {
               <span className={styles.detailValue}>{dog.size}</span>
             </div>
           </div>
+        </div>
 
-          {dog.status === 'AVAILABLE' && (
+        {dog.status === 'AVAILABLE' && (
+          <div className={styles.adoptButtonWrapper}>
             <Button
               variant="primary"
               size="large"
               onClick={handleAdoptClick}
-              fullWidth
+              className={styles.adoptButton}
             >
               I Want to Adopt {dog.name}
             </Button>
-          )}
-        </div>
+          </div>
+        )}
 
         {showAdoptionForm && (
           <div id="adoption-form" className={styles.formSection}>

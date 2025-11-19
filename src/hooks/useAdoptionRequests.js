@@ -1,11 +1,6 @@
 import { useState, useEffect } from 'react';
 import adoptionRequestService from '../services/adoptionRequestService';
 
-/**
- * Hook para obtener solicitudes de adopción
- * @param {Object} params - Parámetros de paginación y filtros
- * @returns {Object} { requests, loading, error, totalPages, refetch }
- */
 const useAdoptionRequests = (params = {}) => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +15,6 @@ const useAdoptionRequests = (params = {}) => {
       
       let response;
       
-      // Si hay filtros, usar el endpoint de filtrado
       if (params.status || params.dogId || params.requesterName) {
         response = await adoptionRequestService.filterRequests(params);
       } else {
@@ -40,7 +34,7 @@ const useAdoptionRequests = (params = {}) => {
 
   useEffect(() => {
     fetchRequests();
-  }, [JSON.stringify(params)]); // Refetch cuando cambien los parámetros
+  }, [JSON.stringify(params)]);
 
   return {
     requests,
