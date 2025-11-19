@@ -135,10 +135,6 @@ const DogDetailPage = () => {
               Adoption Application for {dog.name}
             </h2>
 
-            <p className={styles.formSubtitle}>
-              Please fill out this form to start the adoption process. We will review your application and get back to you soon!
-            </p>
-
             <AdoptionForm 
               dogId={dog.id}
               dogName={dog.name}
