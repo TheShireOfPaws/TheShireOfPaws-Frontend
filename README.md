@@ -2,6 +2,17 @@
 
 The Frontend provides a modern, accessible interface for viewing animals and interacting with the adoption system. It is built as a Single Page Application (SPA) that consumes the Backend API.
 
+<img width="1463" height="878" alt="image" src="https://github.com/user-attachments/assets/6828a2ec-5cab-49f0-8d2d-e736e6df159f" />
+<img width="884" height="802" alt="image" src="https://github.com/user-attachments/assets/70f79bdd-56ad-4c22-9f65-7338e0fa916d" />
+<img width="655" height="803" alt="image" src="https://github.com/user-attachments/assets/21e36a00-798c-445f-b8bb-d6cbec33979d" />
+<img width="1406" height="789" alt="image" src="https://github.com/user-attachments/assets/8a0db8f4-f156-4881-9e8f-d5bc40d22e33" />
+<img width="1237" height="757" alt="image" src="https://github.com/user-attachments/assets/5e3cac45-c414-4b8c-8091-7310a399fb8f" />
+
+
+
+
+
+
 ### 🚀 Getting Started
 
 Navigate to the frontend directory and install the necessary dependencies.
