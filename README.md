@@ -1,4 +1,4 @@
-## 🎨 Frontend: User Interface (React.js)
+## 🎨 Frontend
 
 The Frontend provides a modern, accessible interface for viewing animals and interacting with the adoption system. It is built as a Single Page Application (SPA) that consumes the Backend API.
 
