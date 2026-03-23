@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import Button from '../../components/common/Button/Button';
+import Button from '../../components/common/Button/button';
 import AdoptionForm from '../../components/adoption/AdoptionForm/AdoptionForm';
 import dogService from '../../services/dogService';
 import fileService from '../../services/fileService';
