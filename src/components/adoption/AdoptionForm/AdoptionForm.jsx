@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import adoptionRequestService from '../../../services/adoptionRequestService';
-import Button from '../../common/Button/Button';
+import Button from '../../common/Button/button';
 import styles from './AdoptionForm.module.css';
 
 const AdoptionForm = ({ dogId, dogName, onSuccess }) => {

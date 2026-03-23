@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Button from '../../common/Button/Button';
+import Button from '../../common/Button/button';
 import dogService from '../../../services/dogService';
 import fileService from '../../../services/fileService';
 import styles from './DogProfileForm.module.css';
