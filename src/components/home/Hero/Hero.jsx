@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import Button from '../../common/Button/Button';
+import Button from '../../common/Button/button';
 import styles from './Hero.module.css';
 
 import dog1 from '../../../assets/Images/HEADER-1.jpg';
