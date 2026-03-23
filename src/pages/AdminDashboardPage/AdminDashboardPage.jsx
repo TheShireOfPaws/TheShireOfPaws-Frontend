@@ -6,7 +6,7 @@ import useAdoptionRequests from '../../hooks/useAdoptionRequests';
 import dogService from '../../services/dogService';
 import adoptionRequestService from '../../services/adoptionRequestService';
 import fileService from '../../services/fileService';
-import Button from '../../components/common/Button/Button';
+import Button from '../../components/common/Button/button';
 import DogProfileForm from '../../components/admin/Dashboard/DogProfileForm';
 import ConfirmModal from '../../components/common/ConfirmModal/ConfirmModal';
 import styles from './AdminDashboardPage.module.css';
@@ -99,6 +99,7 @@ const AdminDashboardPage = () => {
     try {
       const request = await adoptionRequestService.getRequestById(requestId);
       setViewingRequest(request);
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       alert('Failed to load request details');
     }
